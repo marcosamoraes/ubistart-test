@@ -54,7 +54,7 @@ class TaskController extends Controller
         $validated = $request->safe()->all();
 
         try {
-            $task = Task::where('id', $id)->whereNull('finished_at')->firstOrFail();
+            $task = Task::where('user_id', Auth::id())->where('id', $id)->whereNull('finished_at')->firstOrFail();
             $task->update($validated);
 
             return response()->json('Tarefa editada com sucesso!', 200);
@@ -72,7 +72,7 @@ class TaskController extends Controller
     public function destroy($id)
     {
         try {
-            Task::findOrFail($id)->delete();
+            Task::where('user_id', Auth::id())->where('id', $id)->firstOrFail()->delete();
             return response()->json('Tarefa deletada com sucesso!', 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
@@ -82,7 +82,7 @@ class TaskController extends Controller
     public function finish($id) 
     {
         try {
-            $task = Task::where('id', $id)->firstOrFail();
+            $task = Task::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
             $task->update(['finished_at' => now()]);
 
             return response()->json('Tarefa finalizada com sucesso!', 200);

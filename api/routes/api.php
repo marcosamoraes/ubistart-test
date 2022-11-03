@@ -24,7 +24,8 @@ Route::prefix('v1')->group(function() {
     Route::post('admin/auth/authenticate', [AdminAuthController::class, 'authenticate']);
 
     Route::middleware('auth:user')->group(function() {
-        Route::resource('tasks', TaskController::class);
+        Route::put('tasks/finish/{id}', [TaskController::class, 'finish']);
+        Route::apiResources(['tasks' => TaskController::class], ['except' => 'show']);
     });
 
     Route::middleware('auth:admin')->group(function() {

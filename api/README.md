@@ -14,9 +14,8 @@
 - Seeders OK
 - Models OK
 - Routes OK
-- Controllers
-- Resources
-- Requests
+- Controllers OK
+- Requests OK
 - Tests
 
 # Tasks web

@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Task;
+use App\Models\User;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
 {
@@ -13,62 +18,49 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $tasks = Task::where('user_id', Auth::id())->paginate();
+        return response()->json($tasks, 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreTaskRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        //
-    }
+        $validated = $request->safe()->all();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        try {
+            $user = User::findOrFail(Auth::id());
+            $user->tasks()->create($validated);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+            return response()->json('Tarefa cadastrada com sucesso!', 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\UpdateTaskRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateTaskRequest $request, $id)
     {
-        //
+        $validated = $request->safe()->all();
+
+        try {
+            $task = Task::where('id', $id)->whereNull('finished_at')->firstOrFail();
+            $task->update($validated);
+
+            return response()->json('Tarefa editada com sucesso!', 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 
     /**
@@ -79,6 +71,23 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            Task::findOrFail($id)->delete();
+            return response()->json('Tarefa deletada com sucesso!', 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function finish($id) 
+    {
+        try {
+            $task = Task::where('id', $id)->firstOrFail();
+            $task->update(['finished_at' => now()]);
+
+            return response()->json('Tarefa finalizada com sucesso!', 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 }

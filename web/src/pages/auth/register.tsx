@@ -12,6 +12,7 @@ import {
   InputRightElement,
   Stack,
   useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock, FaEnvelope } from "react-icons/fa";
 import { useState } from "react";
@@ -51,13 +52,17 @@ export function Register() {
       .catch((error) => {
         toast({
           title: 'Erro!',
-          description: 'E-mail já cadastrado',
+          description: 'E-mail já cadastrado ou inválido',
           status: 'error',
           duration: 5000,
           isClosable: true,
         })
       });
   };
+
+  const isNameError = name === '';
+  const isEmailError = email === '';
+  const isPasswordError = password === '';
 
   return (
     <Flex
@@ -77,14 +82,14 @@ export function Register() {
         <Avatar bg="teal.500" />
         <Heading color="teal.400">TODO List - Cadastro</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
-          <form onSubmit={register}>
+          <form>
             <Stack
               spacing={4}
               p="1rem"
               backgroundColor="whiteAlpha.900"
               boxShadow="md"
             >
-              <FormControl>
+              <FormControl isInvalid={isNameError}>
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
@@ -97,8 +102,11 @@ export function Register() {
                     required
                   />
                 </InputGroup>
+                <FormErrorMessage>
+                  Nome é obrigatório.
+                </FormErrorMessage>
               </FormControl>
-              <FormControl>
+              <FormControl isInvalid={isEmailError}>
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
@@ -111,8 +119,11 @@ export function Register() {
                     required
                   />
                 </InputGroup>
+                <FormErrorMessage>
+                  E-mail é obrigatório.
+                </FormErrorMessage>
               </FormControl>
-              <FormControl>
+              <FormControl isInvalid={isPasswordError}>
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
@@ -131,6 +142,9 @@ export function Register() {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
+                <FormErrorMessage>
+                  Senha é obrigatória.
+                </FormErrorMessage>
               </FormControl>
               <Button
                 borderRadius={0}
@@ -138,6 +152,7 @@ export function Register() {
                 variant="solid"
                 colorScheme="teal"
                 width="full"
+                onClick={register}
               >
                 Cadastrar
               </Button>

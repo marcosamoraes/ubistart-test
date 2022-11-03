@@ -12,6 +12,7 @@ import {
   InputRightElement,
   Stack,
   useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { FaLock, FaEnvelope } from "react-icons/fa";
 import { useState } from "react";
@@ -33,32 +34,37 @@ export function Login() {
 
   const login = (e: any) => {
     e.preventDefault();
-    const data = { email: email, password: password };
-    api
-      .post("/api/v1/auth/authenticate", data)
-      .then((response) => {
-        console.log(response);
-        const token = response.data.access_token;
-        localStorage.setItem('authToken', token);
-        toast({
-          title: 'Sucesso!',
-          description: "Login realizado com sucesso!",
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-        });
-        navigate("/todo/list");
-      })
-      .catch((error) => {
-        toast({
-          title: 'Erro!',
-          description: 'Falha ao realizar login, tente novamente',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
+    api.get('/sanctum/csrf-cookie').then(response => {
+      const data = { email: email, password: password };
+
+      api
+        .post("/api/v1/auth/authenticate", data)
+        .then((response) => {
+          const token = response.data.access_token;
+          localStorage.setItem('authToken', token);
+          toast({
+            title: 'Sucesso!',
+            description: "Login realizado com sucesso!",
+            status: 'success',
+            duration: 5000,
+            isClosable: true,
+          });
+          navigate("/todo/list");
         })
-      });
+        .catch((error) => {
+          toast({
+            title: 'Erro!',
+            description: 'Falha ao realizar login, tente novamente',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          })
+        });
+    });
   };
+
+  const isEmailError = email === '';
+  const isPasswordError = password === '';
 
   return (
     <Flex
@@ -85,7 +91,7 @@ export function Login() {
               backgroundColor="whiteAlpha.900"
               boxShadow="md"
             >
-              <FormControl>
+              <FormControl  isInvalid={isEmailError}>
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
@@ -98,8 +104,11 @@ export function Login() {
                     required
                   />
                 </InputGroup>
+                <FormErrorMessage>
+                  E-mail é obrigatório.
+                </FormErrorMessage>
               </FormControl>
-              <FormControl>
+              <FormControl  isInvalid={isPasswordError}>
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
@@ -118,6 +127,9 @@ export function Login() {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
+                <FormErrorMessage>
+                  Senha é obrigatória.
+                </FormErrorMessage>
               </FormControl>
               <Button
                 borderRadius={0}

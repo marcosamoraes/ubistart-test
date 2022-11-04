@@ -46,13 +46,13 @@ class TaskTest extends TestCase
             'deadline' => Carbon::now()->addDays(5)->format('Y-m-d H:i:s')
         ];
 
-        $user = User::with('tasks')->first();
+        $task = Task::first();
+        $user = User::find($task->user_id);
         $token = Auth::guard('user')->login($user);
-        $taskId = Task::where('user_id', $user->id)->first()->id;
 
         $headers = ['Authentication' => "Bearer $token"];
-        $response = $this->putJson("/api/v1/tasks/$taskId", $data, $headers);
-        $response->assertStatus(200);
+        $response = $this->putJson("/api/v1/tasks/$task->id", $data, $headers);
+        $response->dump()->assertStatus(200);
     }
 
     public function test_destroy_task()

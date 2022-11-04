@@ -70,9 +70,33 @@ export function TodoList() {
 
   const editTask = (id: number) => {};
 
-  const deleteTask = (id: number) => {};
+  const deleteTask = (id: number) => {
+    api
+      .delete(`/api/v1/tasks/${id}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      })
+      .then((response) => {
+        getTasks();
+      })
+      .catch((error) => {
+        localStorage.clear();
+        navigate("/login");
+      });
+  };
 
-  const finishTask = (id: number) => {};
+  const finishTask = (id: number) => {
+    api
+      .put(`/api/v1/tasks/finish/${id}`, null, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      })
+      .then((response) => {
+        getTasks();
+      })
+      .catch((error) => {
+        localStorage.clear();
+        navigate("/login");
+      });
+  };
 
   useEffect(() => {
     getTasks();

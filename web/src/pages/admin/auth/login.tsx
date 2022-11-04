@@ -38,7 +38,7 @@ export function Login() {
       const data = { email: email, password: password };
 
       api
-        .post("/api/v1/auth/authenticate", data)
+        .post("/api/v1/admin/auth/authenticate", data)
         .then((response) => {
           const token = response.data.access_token;
           localStorage.setItem('authToken', token);
@@ -49,7 +49,7 @@ export function Login() {
             duration: 5000,
             isClosable: true,
           });
-          navigate("/todo/list");
+          navigate("/admin/todo/list");
         })
         .catch((error) => {
           toast({
@@ -82,7 +82,7 @@ export function Login() {
         alignItems="center"
       >
         <Avatar bg="teal.500" />
-        <Heading color="teal.400">TODO List - Login</Heading>
+        <Heading color="teal.400">TODO List - Admin</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
           <form onSubmit={login}>
             <Stack
@@ -144,11 +144,6 @@ export function Login() {
           </form>
         </Box>
       </Stack>
-      <Box>
-        <Link color="teal.500" to="/register">
-          Cadastre-se
-        </Link>
-      </Box>
     </Flex>
   );
 }

@@ -36,10 +36,10 @@ export function TodoList() {
     const sorted = [...tasks].sort((task: any) => {
       if (task.finished_at) {
         return 1;
-      } else if (moment(task.deadline).isAfter(moment())) {
-        return -2;
+      } else if (moment().isAfter(moment(task.deadline))) {
+        return -1;
       }
-      return -1;
+      return 0;
     });
     return sorted;
   };
@@ -48,7 +48,7 @@ export function TodoList() {
     let color = "inherit";
     if (task.finished_at) {
       color = "gray";
-    } else if (moment(task.deadline).isAfter(moment())) {
+    } else if (moment().isAfter(moment(task.deadline))) {
       color = "red";
     }
     return color;
@@ -159,7 +159,7 @@ export function TodoList() {
                       }}
                     >
                       <Td>{task.description}</Td>
-                      <Td>{moment(task.deadline).format("DD/M/Y HH:mm")}</Td>
+                      <Td>{moment(task.deadline).format("DD/MM/YYYY HH:mm")}</Td>
                       <Td>{task.finished_at}</Td>
                       <Td>
                         {!task.finished_at ? (

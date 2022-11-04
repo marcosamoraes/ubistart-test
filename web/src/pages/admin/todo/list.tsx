@@ -17,7 +17,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash, FaCheck, FaPlus } from "react-icons/fa";
-import api from "../../services/api";
+import api from "../../../services/api";
 import * as moment from "moment";
 
 const CFaEdit = chakra(FaEdit);

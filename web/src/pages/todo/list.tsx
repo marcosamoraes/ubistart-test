@@ -31,13 +31,36 @@ export function TodoList() {
   const toast = useToast();
   const navigate = useNavigate();
 
+  const sortTasks = (tasks: any) => {
+    const sorted = [...tasks].sort((task: any) => {
+      if (task.finished_at) {
+        return 1;
+      } else if (moment(task.deadline).isAfter(moment())) {
+        return -2;
+      } 
+      return -1;
+    });
+    return sorted;
+  };
+
+  const taskBgColor = (task:any) => {
+    let color = 'inherit';
+    if (task.finished_at) {
+      color = 'gray';
+    } else if (moment(task.deadline).isAfter(moment())) {
+      color = 'red';
+    }
+    return color;
+  };
+
   const getTasks = () => {
     api
       .get("/api/v1/tasks", {
         headers: { Authorization: `Bearer ${authToken}` },
       })
       .then((response) => {
-        setTaskList(response.data.data);
+        const tasks = sortTasks(response.data.data);
+        setTaskList(tasks);
       })
       .catch((error) => {
         localStorage.clear();
@@ -47,13 +70,9 @@ export function TodoList() {
 
   const editTask = (id: number) => {};
 
-  const deleteTask = (id: number) => {
-    
-  };
+  const deleteTask = (id: number) => {};
 
-  const finishTask = (id: number) => {
-    
-  };
+  const finishTask = (id: number) => {};
 
   useEffect(() => {
     getTasks();
@@ -81,45 +100,54 @@ export function TodoList() {
               <Tr>
                 <Th>Descrição</Th>
                 <Th>Prazo</Th>
+                <Th>Finalizo em</Th>
                 <Th></Th>
               </Tr>
             </Thead>
             <Tbody>
               {taskList.length > 0
                 ? taskList.map((task) => (
-                    <Tr key={task.id}>
+                    <Tr
+                      key={task.id}
+                      style={{
+                        backgroundColor: taskBgColor(task),
+                      }}
+                    >
                       <Td>{task.description}</Td>
                       <Td>{moment(task.deadline).format("DD/M/Y HH:mm")}</Td>
+                      <Td>{task.finished_at}</Td>
                       <Td>
-                        <Stack spacing={4} direction="row" align="center">
-                          <Button
-                            colorScheme="green"
-                            size="xs"
-                            onClick={() => {
-                              finishTask(task.id);
-                            }}
-                          >
-                            <CFaCheck color="white" />
-                          </Button>
-                          <Button
-                            colorScheme="yellow"
-                            size="xs"
-                            onClick={() => {
-                              editTask(task.id);
-                            }}
-                          >
-                            <CFaEdit color="black" />
-                          </Button>
-                          <Button
-                            colorScheme="red"
-                            size="xs"
-                            onClick={() => {
-                              deleteTask(task.id);
-                            }}
-                          >
-                            <CFaTrash color="white" />
-                          </Button>
-                        </Stack>
+                        {!task.finished_at ? (
+                          <Stack spacing={4} direction="row" align="center">
+                            <Button
+                              colorScheme="green"
+                              size="xs"
+                              onClick={() => {
+                                finishTask(task.id);
+                              }}
+                            >
+                              <CFaCheck color="white" />
+                            </Button>
+                            <Button
+                              colorScheme="yellow"
+                              size="xs"
+                              onClick={() => {
+                                editTask(task.id);
+                              }}
+                            >
+                              <CFaEdit color="black" />
+                            </Button>
+                            <Button
+                              colorScheme="red"
+                              size="xs"
+                              onClick={() => {
+                                deleteTask(task.id);
+                              }}
+                            >
+                              <CFaTrash color="white" />
+                            </Button>
+                          </Stack>
+                        ) : null}
                       </Td>
                     </Tr>
                   ))
